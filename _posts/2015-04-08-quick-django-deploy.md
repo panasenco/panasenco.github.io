@@ -46,10 +46,10 @@ Watch the video at:
     tail -f /var/log/apache2/error.log
     ```
 
-> At this point, you can visit your site's IP address in your browser and see the
-> default Apache installation page. This means that Apache has been installed
-> successfully. If you don't see anything, check the error log to see what the
-> problem is (and if you can fix it).
+    > At this point, you can visit your site's IP address in your browser and see the
+    > default Apache installation page. This means that Apache has been installed
+    > successfully. If you don't see anything, check the error log to see what the
+    > problem is (and if you can fix it).
 
 ---
 
@@ -112,11 +112,12 @@ Replace example.com with your own site name.
     service apache2 restart
     tail -f /var/log/apache2/error.log
     ```
-> You can now access your server through your browser using its IP address.
-> If WSGI was installed correctly, you'll see "Hello World". If not, check the error log.
 
-> To make sure the WSGI daemon processes work, edit the myapp.wsgi file and replace "Hello World" with some other string, like "Hello Universe".
-> If the daemon processes are working correctly, you should be able to refresh the site and see the new string - without restarting your Apache server.
+    > You can now access your server through your browser using its IP address.
+    > If WSGI was installed correctly, you'll see "Hello World". If not, check the error log.
+    > 
+    > To make sure the WSGI daemon processes work, edit the myapp.wsgi file and replace "Hello World" with some other string, like "Hello Universe".
+    > If the daemon processes are working correctly, you should be able to refresh the site and see the new string - without restarting your Apache server.
 
 ---
 
