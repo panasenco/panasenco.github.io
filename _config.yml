@@ -1,7 +1,7 @@
-title:            Scribble
-description:      A jekyll theme. Because I scribble.
-url:              # Site url.
-signoff:          # Your name.
+title:            Aram Panasenco
+description:      Aram Panasenco's tutorials and blog.
+url:              panasenco.github.io
+signoff:          Aram
 disqus_shortname: # disqus comment thread for post header options. ( leave blank if unwanted. )
 facebook_appid:   # appid for like button, remove from /_includes/share.html if unwanted.
 google_analytics: # set tracking, remove from /javascripts/basic.js if unwanted.
