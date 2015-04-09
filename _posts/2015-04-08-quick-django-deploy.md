@@ -6,18 +6,18 @@ date: 2015-04-08
 
 Watch the video at:
 
-> ##WARNING
+> ## WARNING
 > This tutorial is meant to take you through the bare minimum number of steps to set up your own Django production server.
 >
 > This means **skipping over** steps that deal with **safety, security, and general production-readiness**.
 >
 > After you follow this tutorial, you will have to **start over with a clean Linux install** and follow other tutorials to set up your server in a secure and optimized way.
 
-##Deploying your own quick and dirty Django server:
+## Deploying your own quick and dirty Django server:
 
 ---
 
-###Step 1. Log into your server and install Apache 2.
+### Step 1. Log into your server and install Apache 2.
 
 1. *(In your personal computer's Terminal)* Log into your new server as root over SSH (Secure Shell Connection).
     XX.XX.XX.XX is the IP address of your server.
@@ -53,9 +53,9 @@ Watch the video at:
 
 ---
 
-###Step 2. Install Mod-WSGI for Python3 and run a simple app.
+### Step 2. Install Mod-WSGI for Python3 and run a simple app.
 
-1. Install Mod-WSGI for Apache 2 (this will install Python 3 automtically).
+1. Install Mod-WSGI for Apache 2 (this will install Python 3 automatically).
     
     ```
     apt-get install libapache2-mod-wsgi-py3
@@ -70,7 +70,7 @@ Watch the video at:
     nano myapp.wsgi
     ```
 
-1. Paste the following into myapp.wsgi:
+    Paste the following into myapp.wsgi:
 
     ```
     def application(environ, start_response):
@@ -90,8 +90,8 @@ Watch the video at:
     sudo nano /etc/apache2/sites-available/default
     ```
 
-1. To make our sample script work, we need to set up a script alias, a new daemon process, and a directory directive.
-Place them at the bottom of the default configuration file, right before the </VirtualHost> closing tag.
+    To make our sample script work, we need to set up a script alias, a new daemon process, and a directory directive.
+Place them at the bottom of the default configuration file, right before the ``</VirtualHost>`` closing tag.
 Replace example.com with your own site name.
     
     ```
@@ -121,7 +121,7 @@ Replace example.com with your own site name.
 
 ---
 
-###Step 3. Install MySQL and restore your development database.
+### Step 3. Install MySQL and duplicate your development database.
 
 1. *(In your personal computer's Terminal)* Make a "dump" of your development database.
 Here, [user] is the user you used during the development of your Django app and [dbname] is the name of the database you used.
@@ -137,11 +137,58 @@ Once again, replace XX.XX.XX.XX with your server's IP address.
     scp ~/dbdump.sql root@XX.XX.XX.XX:~/
     ```
 
-1. *(Back to )*Install MySQL
+1. *(Back to using SSH with the remote server)* Install MySQL on your server.
 
     ```
     apt-get install mysql-server libmysqlclient-dev
     ```
 
-1. 
+1. Enter the MySQL client interactive prompt.
+
+    ```
+    mysql -u root -p
+    ```
+
+    Inside the MySQL client, create a blank copy of your development database with your development user.
+    
+    ```
+    CREATE DATABASE [dbname];
+    CREATE USER '[user]'@'localhost' IDENTIFIED BY '[userpassword]';
+    GRANT ALL PRIVILEGES ON [dbname].* TO '[user]'@'localhost' WITH GRANT OPTION;
+    FLUSH PRIVILEGES;
+    EXIT
+    ```
+
+1. Restore the development database from the dump.
+    
+    ```
+    mysql -u [user] -p [dbname] < ~/dbdump.sql
+    ```
+
+1. To make sure the restoration went OK, re-enter the interactive prompt.
+    
+    ```
+    mysql -u [user] -p
+    ```
+    
+    Run the following commands to browse through the MySQL databases and tables.
+    
+    ```
+    SHOW DATABASES;
+    USE [dbname];
+    SHOW TABLES;
+    SELECT * FROM [tablename];
+    ```
+    
+    > You should now have an exact copy of your development database set up on your server.
+
+---
+### Step 4. Install Django and Run Your Django Application On Your Server.
+
+
+---
+### Step 5. Link everything together using Mod-WSGI.
+
+
+
 
