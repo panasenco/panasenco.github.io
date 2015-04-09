@@ -1,5 +1,5 @@
-title:            Aram Panasenco
-description:      Aram Panasenco's tutorials and blog.
+title:            Aram Panasenco's Blog
+description:      Aram's tutorials and blog.
 url:              panasenco.github.io
 signoff:          Aram
 disqus_shortname: # disqus comment thread for post header options. ( leave blank if unwanted. )
@@ -9,14 +9,11 @@ google_analytics: # set tracking, remove from /javascripts/basic.js if unwanted.
 links:
   - name:         About
     url:          /about
-  - name:         Blog
-    url:          http://muan.co
-    external:     true
   - name:         Email
-    url:          mailto:hello@muan.co
+    url:          mailto:panasencoaram@gmail.com
     external:     true
   - name:         GitHub
-    url:          http://github.com/muan
+    url:          http://github.com/panasenco
     external:     true
 highlighter:      pygments
 permalink:        pretty
