@@ -16,23 +16,23 @@ Watch the video at:
 ##Deploying your own quick and dirty Django server:
 
 1. Log into your new server as root over SSH (Secure Shell Connection).
-  XX.XX.XX.XX is the IP address of your server.
-
-  ```
-  ssh root@XX.XX.XX.XX
-  ```
+    XX.XX.XX.XX is the IP address of your server.
+    
+    ```
+    ssh root@XX.XX.XX.XX
+    ```
 
 1. Update and upgrade all Debian packages (necessary even for a quick-and-dirty install).
-
-  ```
-  apt-get update
-  apt-get upgrade
-  ```
+    
+    ```
+    apt-get update
+    apt-get upgrade
+    ```
 
 1. Install the Apache 2 server.
-
-  ```
-  apt-get install apache2
-  ```
+    
+    ```
+    apt-get install apache2
+    ```
   
 1. 
