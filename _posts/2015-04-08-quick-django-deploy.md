@@ -2,6 +2,7 @@
 layout: post
 title: Quick and Dirty Django Deployment
 date: 2015-04-08
+disqus: y
 ---
 
 [Click here to watch the video on Youtube](http://youtube.com)
