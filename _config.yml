@@ -2,9 +2,10 @@ title:            Aram Panasenco's Blog
 description:      Aram's tutorials and blog.
 url:              panasenco.github.io
 signoff:          Aram
-disqus_shortname: # disqus comment thread for post header options. ( leave blank if unwanted. )
+disqus_shortname: panasenco
 facebook_appid:   # appid for like button, remove from /_includes/share.html if unwanted.
 google_analytics: # set tracking, remove from /javascripts/basic.js if unwanted.
+comments: true
 
 links:
   - name:         About
