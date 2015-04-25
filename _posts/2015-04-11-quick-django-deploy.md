@@ -16,6 +16,8 @@ disqus: y
 
 ---
 
+### Step 0. Install Debian 7 on your server and power it on.
+
 ### Step 1. Log into your server and install Apache 2.
 
 1. *(On your personal computer)* Log into your new server as root over SSH (Secure Shell Connection).
@@ -27,6 +29,7 @@ disqus: y
     ```
 
 1. Update and upgrade all Debian packages (necessary even for a quick-and-dirty install).
+This might take a few minutes.
     
     ```
     apt-get update
@@ -38,23 +41,26 @@ disqus: y
     ```
     apt-get install apache2
     ```
-  
-1. Open Apache's error log (SUPER useful)
-    
-    ```
-    tail -f /var/log/apache2/error.log
-    ```
 
     > At this point, you can visit your site's IP address in your browser and see the
-    > default Apache installation page. This means that Apache has been installed
+    > default Apache installation page:
+    > 
+    > ![Apache2 "It Works!" page](/images/apache-it-works.png)
+    > 
+    > This means that Apache has been installed
     > successfully. If you don't see anything, check the error log to see what the
-    > problem is (and if you can fix it).
+    > problem is (and if you can fix it) using this command:
+    >
+    > ```
+    > tail -f /var/log/apache2/error.log
+    > ```
 
 ---
 
 ### Step 2. Install Mod-WSGI for Python3 and run a simple app.
 
-1. Install Mod-WSGI for Apache 2 (this will install Python 3 automatically).
+1. Install Mod-WSGI for Apache 2 (this will install Python 3 and restart Apache
+automatically).
     
     ```
     apt-get install libapache2-mod-wsgi-py3
@@ -82,6 +88,8 @@ disqus: y
     
         return [output]
     ```
+    
+    Press Ctrl+X to exit nano (make sure to hit Y to save changes).
 
 1. Open the default VirtualHost configuration file for editing and scroll all the way down.
     
@@ -95,39 +103,52 @@ Replace [sitename].com with your own site name.
     
     ```
     WSGIScriptAlias / /var/www/wsgi-scripts/myapp.wsgi
-    WSGIDaemonProcess [sitename].com processes=2 threads=15 display-name=%{GROUP}
-    WSGIProcessGroup [sitename].com
+    WSGIDaemonProcess processes=2 threads=15
     <Directory /var/www/wsgi-scripts>
         Order allow,deny
         Allow from all
     </Directory>
     ```
-
-1. Restart the Apache server to apply the changes. This is another useful command. When in doubt, restart the server.
     
-    Then, open the error log again to track possible errors.
+    Exit nano and save your changes using Ctrl+X.
+
+1. Restart the Apache server to apply the changes.
     
     ```
     service apache2 restart
-    tail -f /var/log/apache2/error.log
     ```
 
     > You can now access your server through your browser using its IP address.
     > If WSGI was installed correctly, you'll see "Hello World". If not, check the error log.
     > 
-    > To make sure the WSGI daemon processes work, edit the myapp.wsgi file and replace "Hello World" with some other string, like "Hello Universe".
-    > If the daemon processes are working correctly, you should be able to refresh the site and see the new string - without restarting your Apache server.
+
+1. To make sure the WSGI daemon process works, edit the myapp.wsgi file and replace "Hello World" with some other string, like "Hello Universe":
+
+    ```
+    nano /var/www/wsgi-scripts/myapp.wsgi
+    ```
+    
+    If the daemon process is working correctly, you should be able to refresh the site and see the new string - without restarting your Apache server.
 
 ---
 
 ### Step 3. Install MySQL and duplicate your development database.
 
-1. *(On your personal computer)* Make a "dump" of your development database.
-Here, [user] is the user you used during the development of your Django app and [dbname] is the name of the database you used.
+1. *(On your personal computer)* Open a new Terminal window and work with your personal computer for a minute.
+Start your MySQL server. On a Mac, you can use the following command:
+
+    ```
+    mysql.server start
+    ```
+
+1. *(On your personal computer)* You're going to make a "dump" of your development database. 
+Here, [user] is the user you used during the development of your Django app and
+[dbname] is the name of the database you used.
 You will be prompted to enter the password for that user
 
     ```
-    mysql dump -u [user] -p [dbname] > ~/dbdump.sql
+    mysqldump -u [user] -p [dbname] > ~/dbdump.sql
+    ```
 
 1. *(On your personal computer)* Copy the database dump onto the Linux server using scp (Secure Copy).
 Once again, replace XX.XX.XX.XX with your server's IP address.
@@ -136,11 +157,23 @@ Once again, replace XX.XX.XX.XX with your server's IP address.
     scp ~/dbdump.sql root@XX.XX.XX.XX:~/
     ```
 
-1. *(Back to using SSH with the remote server)* Install MySQL on your server.
+1. *(Back to using SSH with the remote server)* Now go back to the window with
+the SSH connection to your server. Make sure the database dump file is now on your server.
+
+    ```
+    cd ~
+    ls
+    ```
+    
+    You should see the dbdump.sql file in the output.
+
+1. Install MySQL on your server.
 
     ```
     apt-get install mysql-server libmysqlclient-dev
     ```
+    
+    Create a password for your root user when you're prompted.
 
 1. Enter the MySQL client interactive prompt.
 
@@ -149,13 +182,14 @@ Once again, replace XX.XX.XX.XX with your server's IP address.
     ```
 
     Inside the MySQL client, create a blank copy of your development database with your development user.
+    Be sure to use the exact same database name, username, and password as your development user.
     
     ```
     CREATE DATABASE [dbname];
     CREATE USER '[user]'@'localhost' IDENTIFIED BY '[password]';
     GRANT ALL PRIVILEGES ON [dbname].* TO '[user]'@'localhost' WITH GRANT OPTION;
     FLUSH PRIVILEGES;
-    EXIT
+    EXIT;
     ```
 
 1. Restore the development database from the dump.
@@ -201,19 +235,20 @@ Once again, replace XX.XX.XX.XX with your server's IP address.
     pip3 freeze > pip_dependencies.txt
     ```
 
-1. *(On your personal computer) Use rsync to transfer all site files (including static files and the Pip dependencies file) from your computer to the server.
+1. *(On your personal computer)* Use rsync to transfer all site files (including static files and the Pip dependencies file) from your computer to the server.
 This might take a while.
 
     ```
-    rsync -au [/path/to/site/]* root@45.33.46.81:/var/www/[sitename].com
+    rsync -au [/path/to/site/]* root@XX.XX.XX.XX:/var/www/[sitename.com]
     ```
     
 1. *(Back to using SSH with the remote server)* The Django files are now on your server, but none of the required Pip packages (including Django itself) are installed.
-Install them using the dependency list you generated earlier.
+Install Pip and then use Pip to install them using the dependency list you generated earlier.
 
     ```
-    cd /var/www/[sitename].com
-    pip3 install -r pip_dependencies.txt
+    apt-get install python3-pip
+    cd /var/www/[sitename.com]
+    pip-3.2 install -r pip_dependencies.txt
     ```
 
 1. Make sure Django and all packages were installed correctly by running the Django development server on your Linux server.
@@ -221,7 +256,7 @@ You have to stop the Apache server first.
     
     ```
     service apache2 stop
-    cd /var/www/[sitename].com/[projectname]
+    cd /var/www/[sitename.com]/[projectname]
     python3 manage.py runserver 0.0.0.0:80
     ```
 
@@ -259,7 +294,7 @@ You have to stop the Apache server first.
 1. Open your project's wsgi.py file.
     
     ```
-    cd /var/www/[sitename].com/[projectname]/[projectname]
+    cd /var/www/[sitename.com]/[projectname]/[projectname]
     nano wsgi.py
     ```
     
@@ -267,11 +302,10 @@ You have to stop the Apache server first.
     
     ```
     import sys
-    sys.path.append('/var/www/kraftyapp.com/kraftyapp')
-    sys.path.append('/usr/local/lib/python3.4/site-packages')
+    sys.path.append('/var/www/[sitename.com]/[projectname]')
     ```
     
-    > Running python3 wsgi.py now shouldn't produce any errors.
+    > Running ``python3 wsgi.py`` now shouldn't produce any errors.
     
 1. Go back to editing your Apache2 default configuration file.
     
@@ -283,11 +317,12 @@ You have to stop the Apache server first.
     
     ```
     WSGIScriptAlias / /var/www/[sitename.com]/[projectname]/[projectname]/wsgi.py
-    WSGIDaemonProcess [sitename.com] processes=2 threads=15 display-name=%{GROUP}
-    WSGIProcessGroup [sitename.com]
+    WSGIDaemonProcess processes=2 threads=15
     <Directory /var/www/[sitename.com]/[projectname]/[projectname]>
-        Order allow,deny
-        Allow from all
+        <Files wsgi.py>
+            Order allow,deny
+            Allow from all
+        </Files>
     </Directory>
     ```
 
@@ -296,7 +331,7 @@ You have to stop the Apache server first.
     ```
     Alias /static /var/www/[sitename.com]/static
     <Directory /var/www/[sitename.com]/static>
-            Require all granted
+        Require all granted
     </Directory>
     ```
 
@@ -304,22 +339,24 @@ You have to stop the Apache server first.
 
     ```
     service apache2 start
-    tail -f /var/log/apache2/error.log
     ```
     
     > Your Django app served through your Apache server should now be available through your server's IP address.
+    > If there are any problems, look at the error log using ``tail -f /var/log/apache2/error.log``.
 
 ---
 
 ## Congratulations!
 
 Your Django app is now accessible through your server.
-Now that you know how to do it the quick and dirty way, follow these tutorials to do it the right way:
+Now that you know how to do it the quick and dirty way, start over with a fresh
+Debian install and follow these tutorials to do it the right way:
 
 * [Set up your Django project using virtualenvwrapper and source control](http://www.jeffknupp.com/blog/2013/12/18/starting-a-django-16-project-the-right-way/)
 * [Set a hostname and a timezone](https://www.linode.com/docs/getting-started#setting-the-hostname)
 * [Create a non-root user, use SSH key-pair authentication, and set up a firewall](https://www.linode.com/docs/security/securing-your-server/)
-* [Improve the security of your MySQL database](https://dev.mysql.com/doc/refman/5.0/en/mysql-secure-installation.html)
+* [Secure your Apache installation using mod_security](https://www.digitalocean.com/community/tutorials/how-to-set-up-mod_security-with-apache-on-debian-ubuntu)
+* [Secure your MySQL database](https://dev.mysql.com/doc/refman/5.0/en/mysql-secure-installation.html)
 * [Go through the deployment checklist to make sure your Django app is ready to deploy](https://docs.djangoproject.com/en/1.8/howto/deployment/checklist/)
 * [Set up mod_wsgi and use a different server to serve static files](https://docs.djangoproject.com/en/1.7/howto/deployment/wsgi/modwsgi/)
 
