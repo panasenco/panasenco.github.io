@@ -468,15 +468,20 @@ Here are the contents of mine:
     
     ```
     # Sync the server with the GitHub site, deleting stale files
-    sudo rsync -d ~/git/[repo]/site/ /var/www/[sitename.com]/ --exclude 'log' --delete-after
+    sudo rsync -dvr ~/git/krafty/site/ /var/www/kraftyapp.com --exclude 'log' --delete-delay
     
     # Repair permissions of the site
-    find /var/www/[sitename.com] -type d -print0 | sudo xargs -0 chmod 0775
-    find /var/www/[sitename.com] -type f -print0 | sudo xargs -0 chmod 0664
+    sudo chown -R www-data:www-data /var/www/kraftyapp.com
+    find /var/www/kraftyapp.com -type d -print0 | sudo xargs -0 chmod 0775
+    find /var/www/kraftyapp.com -type f -print0 | sudo xargs -0 chmod 0664
     
     # Restart the server
     sudo service apache2 restart
     ```
+    
+    Note that this script gives ownership of the site's directory to user
+    www-data and group www-data. If you want your current user to have write
+    access to the site, use the command ``sudo usermod -aG www-data [username]``
 
 1. (Optional) For one-step deployment, create a local deployment script that
 you can run from your local computer's command line. Here's mine:
