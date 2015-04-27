@@ -645,6 +645,7 @@ it's as easy as changing a word in the manage.py command.
         ErrorLog  /var/www/[sitename.com]/log/error.log
         CustomLog /var/www/[sitename.com]/log/access.log combined
         
+        # WSGI interface settings
         WSGIScriptAlias / /var/www/[sitename.com]/[projectname]/[projectname]/wsgi.py
         WSGIDaemonProcess processes=2 threads=15
         <Directory /var/www/[sitename.com]/[projectname]/[projectname]>
@@ -653,13 +654,27 @@ it's as easy as changing a word in the manage.py command.
                 Allow from all
             </Files>
         </Directory>
+        
+        # Regular static files
         Alias /static /var/www/[sitename.com]/static/static
         <Directory /var/www/[sitename.com]/static/static>
             Order allow,deny
             Allow from all
         </Directory>
+        
+        # Expected static files (favicon.ico, sitemap.xml, robots.txt etc.)
+        AliasMatch ^/([^/]+)\.(ico|png|xml|txt|json)$ /var/www/[sitename.com]/static/root/$1.$2
+        <Directory /var/www/[sitename.com]/static/root>
+            Order allow,deny
+            Allow from all
+        </Directory>
     </VirtualHost>
     ```
+    
+    Note the use of AliasMatch at the end. That serves all requests for root files
+    ending in .ico, .png, .xml, and .json to a special static directory called
+    root - that's where favicons, browser configurations, app configurations,
+    and sitemaps live. Favicons were generated with http://realfavicongenerator.net
 
 1. Enable the new virtual host.
     
